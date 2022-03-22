@@ -282,11 +282,7 @@ def question():
 
 #Main program
 def main(operation, values, points):
-    #Koordinat titik telah pre-assigned 
     p = 0
-    # variabel ini menyimpan titik yang harus dihubungkan untuk membentuk sebuah permukaan pada balok
-    # misal 0 1 2 3 artinya sisi pertama terbentuk dengan menghubungkan titik 0 1 2 dan 3
-    # 0 1 2 3 tersebut merujuk kepada index pada array points
     faces = [[0,1,2,3],[1,5,6,2],[5,4,7,6],[4,0,3,7],[0,4,5,1],[3,2,6,7]]
     width, height = 640, 480
 
@@ -294,7 +290,7 @@ def main(operation, values, points):
     operatedPoints = []
     transformedPoints = []
     
-    #tidak dilakukan apa apa
+    #tidak terjadi apa-apa
     if operation == 0:
         for i in range(len(points)):
             operatedPoints.append(points[i])
@@ -330,26 +326,26 @@ def main(operation, values, points):
         for i in range(len(points)):
             operatedPoints.append(points[i].rotateArbitraryAxis(point1, point2, values[2][0]))
 
-    #Melakukan proyeksi koordinat yang telah di transformasi pada bidang 2 dimensi
+    #Proyeksi koordinat hasil transformasi pada bidang 2D
     for i in range(len(operatedPoints)):
         transformedPoints.append(operatedPoints[i].project(width, height, 500, 10))
 
     win = GraphWin('3D Transformation', width, height)
     win.setBackground('black')
 
-    #Menentukan nilai garis pembentuk balok
+    #Nilai garis balok
     for i in faces:
         lines.append(Line(Point(transformedPoints[i[0]].x, transformedPoints[i[0]].y), Point(transformedPoints[i[1]].x, transformedPoints[i[1]].y)))
         lines.append(Line(Point(transformedPoints[i[0]].x, transformedPoints[i[0]].y), Point(transformedPoints[i[3]].x, transformedPoints[i[3]].y)))
         lines.append(Line(Point(transformedPoints[i[1]].x, transformedPoints[i[1]].y), Point(transformedPoints[i[2]].x, transformedPoints[i[2]].y)))
         lines.append(Line(Point(transformedPoints[i[2]].x, transformedPoints[i[2]].y), Point(transformedPoints[i[3]].x, transformedPoints[i[3]].y)))
     
-    #Menggambar garis pembentuk balok
+    #Gambar garis balok
     for i in lines:
         i.draw(win)
         i.setFill('white')
 
-    #Menampilkan titik koordinat di x y z
+    #Titik koordinat di xyz
     for i in range(len(transformedPoints)):
         p = Text(Point(transformedPoints[i].x, transformedPoints[i].y), "{:.2f}, {:.2f}, {:.2f}".format(operatedPoints[i].x, operatedPoints[i].y, operatedPoints[i].z))
         print("{:.2f}, {:.2f}, {:.2f}".format(operatedPoints[i].x, operatedPoints[i].y, operatedPoints[i].z))
@@ -367,7 +363,7 @@ def main(operation, values, points):
     win.getMouse()
     win.close()
 
-#Nilai ini bertujuan agar fungsi utama tahu operasi apa yang dilakukan dan besaran nilai transformasinya
+#Titik Balok
 points = [Point3D(-2,1,-2),
           Point3D(2,1,-2),
           Point3D(2,-1,-2),
