@@ -105,13 +105,13 @@ class Point3D:
                 miu = 270
         else:
             miu = atan (yVect / sqrt(xVect **2 + zVect**2)) * 180 / pi
-        step1 = self.translate(0 - point1[0], 0 - point1[1], 0 - point1[2])
-        step2 = step1.rotateY(-beta)
-        step3 = step2.rotateX(miu)
-        step4 = step3.rotateZ(angle)
-        step5 = step4.rotateX(-miu)
-        step6 = step5.rotateY(beta)
-        result = step6.translate(point1[0] - 0, point1[1] - 0, point1[2] - 0)
+        step1 = self.translation(0 - point1[0], 0 - point1[1], 0 - point1[2])
+        step2 = step1.rotationY(-beta)
+        step3 = step2.rotationX(miu)
+        step4 = step3.rotationZ(angle)
+        step5 = step4.rotationX(-miu)
+        step6 = step5.rotationY(beta)
+        result = step6.translation(point1[0] - 0, point1[1] - 0, point1[2] - 0)
 
         return result
     
@@ -154,8 +154,10 @@ def question():
         
     #Operasi 2 scaling
     elif operation == 2:
-        factor = float(input("Berapa faktor scaling yang diinginkan?\nFaktor: "))
-        values = [factor]
+        xFactor = float(input("Berapa faktor scaling x yang diinginkan?\nFaktor: "))
+        yFactor = float(input("Berapa faktor scaling y yang diinginkan?\nFaktor: "))
+        zFactor = float(input("Berapa faktor scaling z yang diinginkan?\nFaktor: "))
+        values = [xFactor, yFactor, zFactor]
         
     #Operasi 3 shearing
     elif operation == 3:
@@ -204,7 +206,7 @@ def main(operation, values, points):
     # misal 0 1 2 3 artinya sisi pertama terbentuk dengan menghubungkan titik 0 1 2 dan 3
     # 0 1 2 3 tersebut merujuk kepada index pada array points
     faces = [[0,1,2,3],[1,5,6,2],[5,4,7,6],[4,0,3,7],[0,4,5,1],[3,2,6,7]]
-    width, height = 1280, 720
+    width, height = 640, 480
 
     lines = []
     operatedPoints = []
@@ -223,9 +225,9 @@ def main(operation, values, points):
             
     #scaling
     elif operation == 2:
-        Sc = values[0]
+        xFactor, yFactor, zFactor = values[0], values[1], values[2]
         for i in range(len(points)):
-            operatedPoints.append(points[i].scaling(Sc))
+            operatedPoints.append(points[i].scaling(xFactor, yFactor, zFactor))
             
     #shearing
     elif operation == 3:
@@ -248,7 +250,7 @@ def main(operation, values, points):
 
     #Melakukan proyeksi koordinat yang telah di transformasi pada bidang 2 dimensi
     for i in range(len(operatedPoints)):
-        transformedPoints.append(operatedPoints[i].project(width, height, 300, 5))
+        transformedPoints.append(operatedPoints[i].project(width, height, 500, 10))
 
     win = GraphWin('3D Transformation', width, height)
     win.setBackground('black')
@@ -285,13 +287,13 @@ def main(operation, values, points):
 
 #Nilai ini bertujuan agar fungsi utama tahu operasi apa yang dilakukan dan besaran nilai transformasinya
 points = [Point3D(-2,1,-2),
-            Point3D(2,1,-2),
-            Point3D(2,-1,-2),
-            Point3D(-2,-1,-2),
-            Point3D(-2,1,2),
-            Point3D(2,1,2),
-            Point3D(2,-1,2),
-            Point3D(-2,-1,2)]
+          Point3D(2,1,-2),
+          Point3D(2,-1,-2),
+          Point3D(-2,-1,-2),
+          Point3D(-2,1,2),
+          Point3D(2,1,2),
+          Point3D(2,-1,2),
+          Point3D(-2,-1,2)]
 
 op, val = question()
 main(op, val, points)
