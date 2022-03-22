@@ -306,14 +306,14 @@ def main(operation, values, points):
     win.close()
 
 #Nilai ini bertujuan agar fungsi utama tahu operasi apa yang dilakukan dan besaran nilai transformasinya
-points = [Point3D(2,3,2),
-          Point3D(4,3,2),
-          Point3D(4,5,2),
-          Point3D(2,5,2),
-          Point3D(4,5,6),
-          Point3D(6,5,6),
-          Point3D(6,7,6),
-          Point3D(4,7,6)]
+points = [Point3D(-2,1,-1),
+            Point3D(2,1,-1),
+            Point3D(2,-1,-1),
+            Point3D(-2,-1,-1),
+            Point3D(-2,1,1),
+            Point3D(2,1,1),
+            Point3D(2,-1,1),
+            Point3D(-2,-1,1)]
 
 op, val = question()
 main(op, val, points)
