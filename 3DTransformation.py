@@ -163,7 +163,7 @@ def question():
         2. Scaling
         3. Shearing
         4. Rotasi terhadap sumbu x, y, atau z
-        5. Rotasi terhadap sumbu bebas (arbirary)
+        5. Rotasi terhadap sumbu bebas (arbirtary)
         Hanya pilih angka 0 sampai 5!
         Pilihan: """))
 
