@@ -85,45 +85,13 @@ class Point3D:
                         [0, 0, 0, 1]])
         result = np.dot(rtZ, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
-
-    """def rotateArbitraryAxis(self, point1, point2, angle):
-        xVect = point2[0] - point1[0]
-        yVect = point2[1] - point1[1]
-        zVect = point2[2] - point1[2]
-        beta, miu = 0,0
-        if zVect == 0:
-            if xVect > 0: 
-                beta = 90
-            else:
-                beta = 270
-        else:
-            beta = atan(xVect/ zVect) * 180 / pi
-            
-        if xVect **2 + zVect**2 == 0:
-            if yVect > 0:
-                miu = 90
-            else:
-                miu = 270
-        else:
-            miu = atan (yVect / sqrt(xVect **2 + zVect**2)) * 180 / pi
-            
-        step1 = self.translation(0 - point1[0], 0 - point1[1], 0 - point1[2])
-        step2 = step1.rotationY(-beta)
-        step3 = step2.rotationX(miu)
-        step4 = step3.rotationZ(angle)
-        step5 = step4.rotationX(-miu)
-        step6 = step5.rotationY(beta)
-        result = step6.translation(point1[0] - 0, point1[1] - 0, point1[2] - 0)
-
-        return result"""
     
-    """ UNTUK YG ARBITARY, COBA INI GES """
     def rotateArbitraryAxis(self, point1, point2, angle):
         xVect = point2[0] - point1[0]
         yVect = point2[1] - point1[1]
         zVect = point2[2] - point1[2]
         beta, miu = 0,0
-        
+
         if zVect == 0:
             if xVect > 0: 
                 beta = 90
@@ -131,7 +99,6 @@ class Point3D:
                 beta = 270
         else:
             beta = atan(xVect/ zVect) * 180 / pi
-            
         if xVect **2 + zVect**2 == 0:
             if yVect > 0:
                 miu = 90
@@ -140,62 +107,45 @@ class Point3D:
         else:
             miu = atan(yVect / math.sqrt(xVect **2 + zVect**2)) * 180 / pi
             
-        x = 0 - point1[0] 
-        y = 0 - point1[1] 
-        z = 0 - point1[2]
+        t1 = np.array([[1, 0, 0, 0 - point1[0]],
+                       [0, 1, 0, 0 - point1[1]],
+                       [0, 0, 1, 0 - point1[2]],
+                       [0, 0, 0, 1]])
         
-        t1 = np.array([[1,0,0,x],
-                      [0,1,0,y],
-                      [0,0,1,z],
-                      [0,0,0,1]])
-        a = np.sin(-beta)
-        b = np.cos(-beta)
+        rotY1 = np.array([[np.cos(-beta),   0, np.sin(-beta), 0],
+                          [0,               1, 0,             0],
+                          [-(np.sin(-beta)),0, np.cos(-beta), 0],
+                          [0,               0, 0,             1]])
         
-        rotY1 = np.array([[b,0,a,0],
-                      [0,1,0,0],
-                      [-a,0,b,0],
-                      [0,0,0,1]])
-        a = np.sin(miu)
-        b = np.cos(miu)
+        rotX1 = np.array([[1, 0,            0,              0],
+                          [0, np.cos(miu) , -(np.sin(miu)), 0],
+                          [0, np.sin(miu) , np.cos(miu),    0], 
+                          [0, 0,            0,              1]])
         
-        rotX1 = np.array([[1,0,0,0],
-                      [0,b,-a,0],
-                      [0,a,b,0], 
-                      [0,0,0,1]])
-        a = np.sin(angle)
-        b = np.cos(angle)
+        rotZ = np.array([[np.cos(angle), -(np.sin(angle)), 0, 0],
+                         [np.sin(angle), np.cos(angle),    0, 0],
+                         [0,             0,                1, 0],
+                         [0,             0,                0, 1]])
         
-        rotZ = np.array([[b,-a,0,0],
-                      [a,b,0,0],
-                      [0,0,1,0],
-                      [0,0,0,1]])
-        a = np.sin(-miu)
-        b = np.cos(-miu)
+        rotX2 = np.array([[1, 0,            0,               0],
+                          [0, np.cos(-miu), -(np.sin(-miu)), 0],
+                          [0, np.sin(-miu), np.cos(-miu),    0], 
+                          [0, 0,            0,               1]])
         
-        rotX2 = np.array([[1,0,0,0],
-                      [0,b,-a,0],
-                      [0,a,b,0], 
-                      [0,0,0,1]])
-        a = np.sin(beta)
-        b = np.cos(beta)
+        rotY2 = np.array([[np.cos(beta),    0, np.sin(beta), 0],
+                          [0,               1, 0,            0],
+                          [-(np.sin(beta)), 0, np.cos(beta), 0],
+                          [0,               0, 0,            1]])
         
-        rotY2 = np.array([[b,0,a,0],
-                      [0,1,0,0],
-                      [-a,0,b,0],
-                      [0,0,0,1]])
-        x = point1[0] - 0
-        y = point1[1] - 0
-        z = point1[2] - 0
-        
-        t2 = np.array([[1,0,0,x],
-                      [0,1,0,y],
-                      [0,0,1,z],
-                      [0,0,0,1]])
+        t2 = np.array([[1, 0, 0, point1[0] - 0],
+                       [0, 1, 0, point1[1] - 0],
+                       [0, 0, 1, point1[2] - 0],
+                       [0, 0, 0, 1]])
 
-        temp = np.dot(t2,np.dot(rotY2,np.dot(rotX2,np.dot(rotZ,np.dot(rotX1, np.dot(rotY1,np.dot(t1,[self.x,self.y,self.z,1])))))))
+        result = np.dot(t2,np.dot(rotY2,np.dot(rotX2,np.dot(rotZ,np.dot(rotX1, np.dot(rotY1,np.dot(t1,[self.x,self.y,self.z,1])))))))
 
-        return Point3D(temp[0],temp[1],temp[2])
-    """ end of cobain ini """
+        return Point3D(result[0],result[1],result[2])
+
     
     def project(self, width, height, fov, viewer_distance):
         factor = fov / (viewer_distance + self.z)
