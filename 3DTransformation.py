@@ -1,14 +1,13 @@
-from graphics import *
 import numpy as np
-from math import *
 import sys
-
+from graphics import *
+from math import *
 
 #Class ini untuk melakukan operasi terhadap titik 3 dimensi termasuk memproyeksikannya dalam bidang 2 dimensi
 class Point3D:
     def __init__(self, x = 0, y = 0, z = 0):
         self.x, self.y, self.z = float(x), float(y), float(z)
-    #Translation
+
     def translate(self, xTrans, yTrans, zTrans):
         matrix = np.array([
             [1,0,0,xTrans], 
@@ -19,46 +18,41 @@ class Point3D:
         vector = np.array([self.x, self.y, self.z,1])
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
-    #Scaling
+
     def scale(self, Sc):
         matrix = np.array([
             [Sc, 0, 0, 0],
             [0, Sc, 0, 0],
-            [0,0, Sc, 0],
-            [0,0,0,1]
+            [0, 0, Sc, 0],
+            [0, 0, 0, 1]
         ])
         vector = np.array([self.x, self.y, self.z, 1])
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
-    #Shearing
-    def Shear(self, Shx,Shy,Shz):
-        Shxy = np.array([
-            [1, 0, Shx, 0], 
-            [0, 1, Shy, 0],
-            [0, 0, 1, 0],
-            [0,0,0,1]
-            ])
-        Shyz = np.array([
-            [1,0,0,0],
-            [0, Shy, 0,0],
-            [0, Shz, 1,0],
-            [0,0,0,1]
-            ])
-        Shxz = np.array([
-            [Shx, 0, 0, 0],
-            [0, 1, 0, 0],
-            [Shz, 0, 1,0],
-            [0,0,0,1]
-            ])
-        vector = np.array ([self.x, self.y, self.z, 1])
-        if Shz == 0:
-            result = Shxy.dot(vector)
-        elif Shy == 0:
-            result = Shxz.dot(vector)
-        elif Shx == 0:
-            result = Shyz.dot(vector)
+
+    def shearing(self, shx, shy, shz):
+        sh = [[0]*4]*4
+        if shx == 0:
+            sh = np.array([[1, 0, 0, 0],
+                          [0, shy, 0, 0],
+                          [0, shz, 1, 0],
+                          [0, 0, 0, 1]])
+                        
+        elif shy == 0:
+            sh = np.array([[shx, 0, 0, 0],
+                           [0, 1, 0, 0],
+                           [shz, 0, 1,0],
+                           [0, 0, 0, 1]])
+        elif shz == 0:
+            sh = np.array([[1, 0, shx, 0], 
+                           [0, 1, shy, 0],
+                           [0, 0, 1, 0],
+                           [0, 0, 0, 1]])
+
+        result = np.dot(sh, [self.x, self.y, self.z, 1])
         
         return Point3D(result[0], result[1], result[2])
+
     #Rotasi pada sumbu x
     def rotateX(self, angle):
         """ Merotasikan titik terhadap sumbu X sesuai sudut yang diinginkan (degrees) """
@@ -73,6 +67,7 @@ class Point3D:
         vector = np.array([self.x, self.y, self.z,1])
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
+
     #Rotasi terhadap sumbu Y
     def rotateY(self, angle):
         """ Merotasikan titik terhadap sumbu Y sesuai sudut yang diinginkan (degrees) """
@@ -88,6 +83,7 @@ class Point3D:
         vector = np.array([self.x, self.y, self.z,1])
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
+
     #Rotasi terhadap sumbu Z
     def rotateZ(self, angle):
         """ Merotasikan titik terhadap sumbu Z sesuai sudut yang diinginkan (degrees) """
@@ -103,6 +99,7 @@ class Point3D:
         vector = np.array([self.x, self.y, self.z,1])
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
+
     #Rotasi terhadap sumbu bebas (arbitrary)
     def rotateArbitraryAxis(self, point1, point2, angle):
         #Determining arbitrary axis
@@ -144,7 +141,7 @@ class Point3D:
 #Fungsi ini berfungsi untuk meminta input dari pengguna
 def question():
     values = []
-    #Program mendeteksi transformasi yang akan dilakukan dengan input dibawah
+
     operation =int(input(
         """Selamat datang! Transformasi apa yang ingin anda lakukan?
         0. Melihat ukuran asli balok
@@ -154,9 +151,9 @@ def question():
         4. Rotation terhadap sumbu x, y, atau z
         5. Rotation terhadap sumbu bebas (arbirary)
         Hanya pilih angka 0 sampai 5!
-        (Panduan: untuk melihat ukuran asli balok, tuliskan angka '0' tanpa tanda petik)
         Pilihan: """))
-    #Ketika pengguna memasukan nilai diluar yang diterima, program akan dihentikan
+
+    #Jika input diluar nilai yang ada program akan berhenti
     if operation > 5 or operation < 0:
         print("PILIHAN TIDAK TERSEDIA")
         sys.exit()
@@ -165,36 +162,51 @@ def question():
     if operation == 0:
         values = [0]
     
-    #Operasi 1 adalah translasi, bagian ini untuk memasukan nilai translasi
+    #Operasi 1 translation
     elif operation == 1:
         xTrans = int(input("Digeser sejauh berapa satuan ke arah sumbu X?\nSatuan: "))
         yTrans = int(input("Digeser sejauh berapa satuan ke arah sumbu Y?\nSatuan: "))
         zTrans = int(input("Digeser sejauh berapa satuan ke arah sumbu Z?\nSatuan: "))
         values = [xTrans, yTrans, zTrans]
         
-    #Operasi 2 adalah scaling, bagian ini untuk memasukan seberapa besar scaling akan dilakukan
+    #Operasi 2 scaling
     elif operation == 2:
         factor = float(input("Berapa faktor scaling yang diinginkan?\nFaktor: "))
         values = [factor]
         
-    #Operasi 3 adalah Shear, bagian ini untuk memasukkan nilai shear
+    #Operasi 3 shearing
     elif operation == 3:
-        xShear = float(input("Shearing ke arah sumbu X sebanyak berapa satuan?\nSatuan: "))
-        yShear = float(input("Shearing ke arah sumbu Y sebanyak berapa satuan?\nSatuan: "))
-        zShear = float(input("Shearing ke arah sumbu Z sebanyak berapa satuan?\nSatuan: "))
-        if(xShear != 0 and yShear != 0 and zShear != 0):
-            print("INPUT TIDAK SESUAI! Hanya isikan 2 bilangan non-zero")
-            sys.exit()
+        print("3D shearing apa yang ingin anda lakukan : \n1. xy \n2. yz \n3. xz \n4. Tidak dilakukan shearing")
+        shear = int(input("Pilih sesuai nomor \n"))
+        if shear > 4 or shear < 1:
+            print("PILIHAN TIDAK TERSEDIA")
+            sys.exit
+        
+        if shear == 1:
+            xShear = float(input("Berapa faktor Shear x yang diinginkan?\nFaktor x: "))
+            yShear = float(input("Berapa faktor Shear y yang diinginkan?\nFaktor y: "))
+            values = [xShear, yShear, 0]
+        elif shear == 2:
+            yShear = float(input("Berapa faktor Shear y yang diinginkan?\nFaktor y: "))
+            zShear = float(input("Berapa faktor Shear z yang diinginkan?\nFaktor z: "))
+            values = [0, yShear, zShear]
+        elif shear == 3:
+            xShear = float(input("Berapa faktor Shear x yang diinginkan?\nFaktor x: "))
+            zShear = float(input("Berapa faktor Shear z yang diinginkan?\nFaktor z: "))
+            values = [xShear, 0, zShear]
+        elif shear == 4:
+            values = [0]
+
         values = [xShear, yShear, zShear]
 
-    #Operasi 4 adalah rotasi, bagian ini untuk memasukan sudut rotasi
+    #Operasi 4 rotasi
     elif operation == 4:
-        xRot = float(input("Rotasi terhadap sumbu X dengan sumbu putar sebesar? (dalam satuan degrees)\n"))
-        yRot = float(input("Rotasi terhadap sumbu Y dengan sumbu putar sebesar? (dalam satuan degrees)\n"))
-        zRot = float(input("Rotasi terhadap sumbu Z dengan sumbu putar sebesar? (dalam satuan degrees)\n"))
+        xRot = float(input("Rotasi terhadap sumbu X dengan sumbu putar sebesar? (satuan degrees)\n"))
+        yRot = float(input("Rotasi terhadap sumbu Y dengan sumbu putar sebesar? (satuan degrees)\n"))
+        zRot = float(input("Rotasi terhadap sumbu Z dengan sumbu putar sebesar? (satuan degrees)\n"))
         values = [xRot, yRot, zRot] 
    
-    #Operasi 5 adalah rotasi pada arbitrary axis, bagian ini untuk memasukan axis dan sudut rotasi
+    #Operasi 5 rotasi pada arbitrary axis
     elif operation == 5:
         x1, y1,z1 = input("Masukkan titik pertama dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
         x2, y2,z2 = input("Masukkan titik kedua dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
@@ -215,11 +227,9 @@ def main(operation, values, points):
     faces = [[0,1,2,3],[1,5,6,2],[5,4,7,6],[4,0,3,7],[0,4,5,1],[3,2,6,7]]
 
     width, height = 1280, 720
-    #Untuk menyimpan garis yang dibentuk:
+
     lines = []
-    #Untuk menyimpan titik yang dilakukan transformasi:
     operatedPoints = []
-    #Untuk menyimpan titik yang telah diproyeksi
     transformedPoints = []
     
     #tidak dilakukan apa apa
@@ -264,7 +274,6 @@ def main(operation, values, points):
 
     win = GraphWin('3D Transformation', width, height)
     win.setBackground('black')
-    
 
     #Menentukan nilai garis pembentuk balok
     for i in faces:
@@ -272,6 +281,7 @@ def main(operation, values, points):
         lines.append(Line(Point(transformedPoints[i[0]].x, transformedPoints[i[0]].y), Point(transformedPoints[i[3]].x, transformedPoints[i[3]].y)))
         lines.append(Line(Point(transformedPoints[i[1]].x, transformedPoints[i[1]].y), Point(transformedPoints[i[2]].x, transformedPoints[i[2]].y)))
         lines.append(Line(Point(transformedPoints[i[2]].x, transformedPoints[i[2]].y), Point(transformedPoints[i[3]].x, transformedPoints[i[3]].y)))
+    
     #Menggambar garis pembentuk balok
     for i in lines:
         i.draw(win)
@@ -297,12 +307,13 @@ def main(operation, values, points):
 
 #Nilai ini bertujuan agar fungsi utama tahu operasi apa yang dilakukan dan besaran nilai transformasinya
 points = [Point3D(2,3,2),
-            Point3D(4,3,2),
-            Point3D(4,5,2),
-            Point3D(2,5,2),
-            Point3D(4,5,6),
-            Point3D(6,5,6),
-            Point3D(6,7,6),
-            Point3D(4,7,6)]
+          Point3D(4,3,2),
+          Point3D(4,5,2),
+          Point3D(2,5,2),
+          Point3D(4,5,6),
+          Point3D(6,5,6),
+          Point3D(6,7,6),
+          Point3D(4,7,6)]
+
 op, val = question()
 main(op, val, points)
