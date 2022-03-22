@@ -15,12 +15,12 @@ class Point3D:
     def __init__(self, x = 0, y = 0, z = 0):
         self.x, self.y, self.z = float(x), float(y), float(z)
 
-    def translation(self, xTrans, yTrans, zTrans):
-        tr = np.array([[1, 0, 0, xTrans], 
-                       [0, 1, 0, yTrans], 
-                       [0, 0, 1, zTrans], 
+    def translation(self, xTr, yTr, zTr):
+        trans = np.array([[1, 0, 0, xTr], 
+                       [0, 1, 0, yTr], 
+                       [0, 0, 1, zTr], 
                        [0, 0, 0, 1]])
-        result = np.dot(tr, [self.x, self.y, self.z, 1])
+        result = np.dot(trans, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
     def scaling(self, Sx, Sy, Sz):
