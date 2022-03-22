@@ -1,33 +1,33 @@
+# Kelompok 6 :
+# 1. Annisa Raihana Cahya Putri   (20/460540/TK/51129)
+# 2. Auletta Khansa Pradiviasari  (20/456359/TK/50489)
+# 3. Hervi Nur Rahmandien         (20/463601/TK/51593)
+# 4. Rahmiyatul Hasanah YE 
+# 5. Siti Malatania               (20/456380/TK/50510)
+
 import numpy as np
 import sys
 from graphics import *
 from math import *
 
-#Class ini untuk melakukan operasi terhadap titik 3 dimensi termasuk memproyeksikannya dalam bidang 2 dimensi
 class Point3D:
     def __init__(self, x = 0, y = 0, z = 0):
         self.x, self.y, self.z = float(x), float(y), float(z)
 
-    def translate(self, xTrans, yTrans, zTrans):
-        matrix = np.array([
-            [1,0,0,xTrans], 
-            [0,1,0,yTrans], 
-            [0,0,1,zTrans], 
-            [0,0,0,1]
-            ])
-        vector = np.array([self.x, self.y, self.z,1])
-        result = matrix.dot(vector)
+    def translation(self, xTrans, yTrans, zTrans):
+        tr = np.array([[1, 0, 0, xTrans], 
+                       [0, 1, 0, yTrans], 
+                       [0, 0, 1, zTrans], 
+                       [0, 0, 0, 1]])
+        result = np.dot(tr, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
-    def scale(self, Sc):
-        matrix = np.array([
-            [Sc, 0, 0, 0],
-            [0, Sc, 0, 0],
-            [0, 0, Sc, 0],
-            [0, 0, 0, 1]
-        ])
-        vector = np.array([self.x, self.y, self.z, 1])
-        result = matrix.dot(vector)
+    def scaling(self, Sc):
+        sc = np.array([[Sc, 0, 0, 0],
+                       [0, Sc, 0, 0],
+                       [0, 0, Sc, 0],
+                       [0, 0, 0, 1]])
+        result = np.dot(sc, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
     def shearing(self, shx, shy, shz):
@@ -50,10 +50,8 @@ class Point3D:
                            [0, 0, 0, 1]])
 
         result = np.dot(sh, [self.x, self.y, self.z, 1])
-        
         return Point3D(result[0], result[1], result[2])
 
-    #Rotasi pada sumbu x
     def rotateX(self, angle):
         """ Merotasikan titik terhadap sumbu X sesuai sudut yang diinginkan (degrees) """
         rad = angle * pi / 180
@@ -68,7 +66,6 @@ class Point3D:
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
 
-    #Rotasi terhadap sumbu Y
     def rotateY(self, angle):
         """ Merotasikan titik terhadap sumbu Y sesuai sudut yang diinginkan (degrees) """
         rad = angle * pi / 180
@@ -84,7 +81,6 @@ class Point3D:
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
 
-    #Rotasi terhadap sumbu Z
     def rotateZ(self, angle):
         """ Merotasikan titik terhadap sumbu Z sesuai sudut yang diinginkan (degrees) """
         rad = angle * pi / 180
@@ -100,7 +96,6 @@ class Point3D:
         result = matrix.dot(vector)
         return Point3D(result[0], result[1], result[2])
 
-    #Rotasi terhadap sumbu bebas (arbitrary)
     def rotateArbitraryAxis(self, point1, point2, angle):
         #Determining arbitrary axis
         xVect = point2[0] - point1[0]
@@ -138,7 +133,7 @@ class Point3D:
         y = -self.y * factor + height / 2
         return Point3D(x, y, 1)
 
-#Fungsi ini berfungsi untuk meminta input dari pengguna
+#Input user
 def question():
     values = []
 
@@ -176,9 +171,9 @@ def question():
         
     #Operasi 3 shearing
     elif operation == 3:
-        print("3D shearing apa yang ingin anda lakukan : \n1. xy \n2. yz \n3. xz \n4. Tidak dilakukan shearing")
+        print("3D shearing apa yang ingin anda lakukan : \n1. xy \n2. yz \n3. xz")
         shear = int(input("Pilih sesuai nomor \n"))
-        if shear > 4 or shear < 1:
+        if shear > 3 or shear < 1:
             print("PILIHAN TIDAK TERSEDIA")
             sys.exit
         
@@ -194,19 +189,15 @@ def question():
             xShear = float(input("Berapa faktor Shear x yang diinginkan?\nFaktor x: "))
             zShear = float(input("Berapa faktor Shear z yang diinginkan?\nFaktor z: "))
             values = [xShear, 0, zShear]
-        elif shear == 4:
-            values = [0]
 
-        values = [xShear, yShear, zShear]
-
-    #Operasi 4 rotasi
+    #Operasi 4 rotation
     elif operation == 4:
         xRot = float(input("Rotasi terhadap sumbu X dengan sumbu putar sebesar? (satuan degrees)\n"))
         yRot = float(input("Rotasi terhadap sumbu Y dengan sumbu putar sebesar? (satuan degrees)\n"))
         zRot = float(input("Rotasi terhadap sumbu Z dengan sumbu putar sebesar? (satuan degrees)\n"))
         values = [xRot, yRot, zRot] 
    
-    #Operasi 5 rotasi pada arbitrary axis
+    #Operasi 5 rotation arbitrary axis
     elif operation == 5:
         x1, y1,z1 = input("Masukkan titik pertama dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
         x2, y2,z2 = input("Masukkan titik kedua dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
@@ -217,7 +208,7 @@ def question():
     return operation, values
 
 
-#Fungsi ini merupakan fungsi operasi utama dari program 
+#Main program
 def main(operation, values, points):
     #Koordinat titik telah pre-assigned 
     p = 0
@@ -225,7 +216,6 @@ def main(operation, values, points):
     # misal 0 1 2 3 artinya sisi pertama terbentuk dengan menghubungkan titik 0 1 2 dan 3
     # 0 1 2 3 tersebut merujuk kepada index pada array points
     faces = [[0,1,2,3],[1,5,6,2],[5,4,7,6],[4,0,3,7],[0,4,5,1],[3,2,6,7]]
-
     width, height = 1280, 720
 
     lines = []
@@ -237,31 +227,31 @@ def main(operation, values, points):
         for i in range(len(points)):
             operatedPoints.append(points[i])
             
-    #Melakukan translasi
+    #translasi
     elif operation == 1:
         xTrans, yTrans, zTrans = values[0], values[1], values[2]
         for i in range(len(points)):
-            operatedPoints.append(points[i].translate(xTrans, yTrans, zTrans))
+            operatedPoints.append(points[i].translation(xTrans, yTrans, zTrans))
             
-    #Melakukan scaling
+    #scaling
     elif operation == 2:
         Sc = values[0]
         for i in range(len(points)):
-            operatedPoints.append(points[i].scale(Sc))
+            operatedPoints.append(points[i].scaling(Sc))
             
-    #Melakukan Shear
+    #shearing
     elif operation == 3:
         xShear, yShear, zShear = values[0], values[1], values[2]
         for i in range(len(points)):
-            operatedPoints.append(points[i].Shear(xShear, yShear, zShear))
+            operatedPoints.append(points[i].shearing(xShear, yShear, zShear))
             
-    #Melakukan Rotasi terhadap sumbu x y dan z
+    #rotation sumbu xyz
     elif operation == 4:
         angleX, angleY, angleZ = values[0], values[1], values[2]
         for i in range(len(points)):
             operatedPoints.append(points[i].rotateX(angleX).rotateY(angleY).rotateZ(angleZ))
 
-    #Melakukan rotasi terhadap arbitrary axis
+    #rotation arbitrary axis
     elif operation == 5:
         point1 = [values[0][0], values[0][1], values[0][2]]
         point2 = [values[1][0], values[1][1], values[1][2]]
@@ -306,14 +296,14 @@ def main(operation, values, points):
     win.close()
 
 #Nilai ini bertujuan agar fungsi utama tahu operasi apa yang dilakukan dan besaran nilai transformasinya
-points = [Point3D(-2,1,-1),
-            Point3D(2,1,-1),
-            Point3D(2,-1,-1),
-            Point3D(-2,-1,-1),
-            Point3D(-2,1,1),
-            Point3D(2,1,1),
-            Point3D(2,-1,1),
-            Point3D(-2,-1,1)]
+points = [Point3D(-2,1,-2),
+            Point3D(2,1,-2),
+            Point3D(2,-1,-2),
+            Point3D(-2,-1,-2),
+            Point3D(-2,1,2),
+            Point3D(2,1,2),
+            Point3D(2,-1,2),
+            Point3D(-2,-1,2)]
 
 op, val = question()
 main(op, val, points)
