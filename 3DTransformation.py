@@ -14,7 +14,8 @@ from math import *
 class Point3D:
     def __init__(self, x = 0, y = 0, z = 0):
         self.x, self.y, self.z = float(x), float(y), float(z)
-
+        
+    # translasi
     def translation(self, xTr, yTr, zTr):
         trans = np.array([[1, 0, 0, xTr], 
                        [0, 1, 0, yTr], 
@@ -23,6 +24,7 @@ class Point3D:
         result = np.dot(trans, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
+    # scaling
     def scaling(self, Sx, Sy, Sz):
         sc = np.array([[Sx, 0, 0, 0],
                        [0, Sy, 0, 0],
@@ -31,6 +33,7 @@ class Point3D:
         result = np.dot(sc, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
+    # shearing
     def shearing(self, shx, shy, shz):
         sh = [[0]*4]*4
         if shx == 0:
@@ -53,36 +56,30 @@ class Point3D:
         result = np.dot(sh, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
+    # ----------------------------
+    # rotasi
+    
     def rotationX(self, angle):
-        rad = angle * pi / 180
-        cosa = cos(rad)
-        sina = sin(rad)
-        rtX = np.array([[1, 0, 0, 0], 
-                        [0, cosa, -sina, 0], 
-                        [0, sina, cosa, 0], 
-                        [0, 0, 0, 1]])
+        rtX = np.array([[1, 0,                         0,                           0], 
+                        [0, np.cos(angle * np.pi/180), -(np.sin(angle * np.pi/180)), 0], 
+                        [0, np.sin(angle * np.pi/180), np.cos(angle * np.pi/180),   0], 
+                        [0, 0,                         0,                           1]])
         result = np.dot(rtX, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
 
     def rotationY(self, angle):
-        rad = angle * pi / 180
-        cosa = cos(rad)
-        sina = sin(rad)
-        rtY = np.array([[cosa, 0, sina, 0], 
-                        [0, 1, 0, 0], 
-                        [-sina, 0, cosa, 0], 
-                        [0, 0, 0, 1]])
+        rtY = np.array([[np.cos(angle * np.pi/180),    0, np.sin(angle * np.pi/180), 0], 
+                        [0,                            1, 0,                         0], 
+                        [-(np.sin(angle * np.pi/180)), 0, np.cos(angle * np.pi/180), 0], 
+                        [0,                            0, 0,                         1]])
         result = np.dot(rtY, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
 
     def rotationZ(self, angle):
-        rad = angle * pi / 180
-        cosa = cos(rad)
-        sina = sin(rad)
-        rtZ = np.array([[cosa, -sina, 0, 0], 
-                        [sina, cosa, 0, 0], 
-                        [0, 0, 1, 0], 
-                        [0, 0, 0, 1]])
+        rtZ = np.array([[np.cos(angle * np.pi/180), -(np.sin(angle * np.pi/180)), 0, 0], 
+                        [np.sin(angle * np.pi/180), np.cos(angle * np.pi/180),    0, 0], 
+                        [0,                         0,                            1, 0], 
+                        [0,                         0,                            0, 1]])
         result = np.dot(rtZ, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
     
@@ -98,34 +95,34 @@ class Point3D:
             else:
                 beta = 270
         else:
-            beta = atan(xVect/ zVect) * 180 / pi
+            beta = atan(xVect/ zVect) * 180 / np.pi
         if xVect **2 + zVect**2 == 0:
             if yVect > 0:
                 miu = 90
             else:
                 miu = 270
         else:
-            miu = atan(yVect / math.sqrt(xVect **2 + zVect**2)) * 180 / pi
+            miu = atan(yVect / math.sqrt(xVect **2 + zVect**2)) * 180 / np.pi
             
         t1 = np.array([[1, 0, 0, 0 - point1[0]],
                        [0, 1, 0, 0 - point1[1]],
                        [0, 0, 1, 0 - point1[2]],
                        [0, 0, 0, 1]])
         
-        rotY1 = np.array([[np.cos(-beta),   0, np.sin(-beta), 0],
-                          [0,               1, 0,             0],
-                          [-(np.sin(-beta)),0, np.cos(-beta), 0],
-                          [0,               0, 0,             1]])
+        rotY1 = np.array([[np.cos(-beta),    0, np.sin(-beta), 0],
+                          [0,                1, 0,             0],
+                          [-(np.sin(-beta)), 0, np.cos(-beta), 0],
+                          [0,                0, 0,             1]])
         
         rotX1 = np.array([[1, 0,            0,              0],
-                          [0, np.cos(miu) , -(np.sin(miu)), 0],
-                          [0, np.sin(miu) , np.cos(miu),    0], 
+                          [0, np.cos(miu), -(np.sin(miu)), 0],
+                          [0, np.sin(miu), np.cos(miu),    0], 
                           [0, 0,            0,              1]])
         
-        rotZ = np.array([[np.cos(angle), -(np.sin(angle)), 0, 0],
-                         [np.sin(angle), np.cos(angle),    0, 0],
-                         [0,             0,                1, 0],
-                         [0,             0,                0, 1]])
+        rotZ = np.array([[np.cos(angle * np.pi/180), -(np.sin(angle * np.pi/180)), 0, 0],
+                         [np.sin(angle * np.pi/180), np.cos(angle * np.pi/180),    0, 0],
+                         [0,                         0,                            1, 0],
+                         [0,                         0,                            0, 1]])
         
         rotX2 = np.array([[1, 0,            0,               0],
                           [0, np.cos(-miu), -(np.sin(-miu)), 0],
@@ -145,7 +142,9 @@ class Point3D:
         result = np.dot(t2,np.dot(rotY2,np.dot(rotX2,np.dot(rotZ,np.dot(rotX1, np.dot(rotY1,np.dot(t1,[self.x,self.y,self.z,1])))))))
 
         return Point3D(result[0],result[1],result[2])
-
+    
+    # akhir rotasi
+    # ----------------------------
     
     def project(self, width, height, fov, viewer_distance):
         factor = fov / (viewer_distance + self.z)
@@ -214,16 +213,16 @@ def question():
 
     #Operasi 4 rotasi
     elif operation == 4:
-        xRot = float(input("Rotasi terhadap sumbu X dengan sumbu putar sebesar? (satuan degrees)\n"))
-        yRot = float(input("Rotasi terhadap sumbu Y dengan sumbu putar sebesar? (satuan degrees)\n"))
-        zRot = float(input("Rotasi terhadap sumbu Z dengan sumbu putar sebesar? (satuan degrees)\n"))
+        xRot = float(input("Rotasi terhadap sumbu X dengan sumbu putar sebesar? (satuan derajat)\n"))
+        yRot = float(input("Rotasi terhadap sumbu Y dengan sumbu putar sebesar? (satuan derajat)\n"))
+        zRot = float(input("Rotasi terhadap sumbu Z dengan sumbu putar sebesar? (satuan derajat)\n"))
         values = [xRot, yRot, zRot] 
    
     #Operasi 5 rotasi terhadap sumbu bebas
     elif operation == 5:
         x1, y1,z1 = input("Masukkan titik pertama dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
         x2, y2,z2 = input("Masukkan titik kedua dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
-        angle = int(input("Berapa besar sumbu putar yang digunakan? (dalam satuan defrees)\nSudut: "))
+        angle = int(input("Berapa besar sumbu putar yang digunakan? (dalam satuan derajat)\nSudut: "))
         values = [[int(x1), int(y1), int(z1)], [int(x2), int(y2), int(z2)], [angle,0,0]]
     
     #Nilai ini bertujuan agar fungsi utama tahu operasi apa yang dilakukan dan besaran nilai transformasinya
