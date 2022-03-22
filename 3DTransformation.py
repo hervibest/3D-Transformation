@@ -86,7 +86,7 @@ class Point3D:
         result = np.dot(rtZ, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
 
-    def rotateArbitraryAxis(self, point1, point2, angle):
+    """def rotateArbitraryAxis(self, point1, point2, angle):
         xVect = point2[0] - point1[0]
         yVect = point2[1] - point1[1]
         zVect = point2[2] - point1[2]
@@ -98,6 +98,7 @@ class Point3D:
                 beta = 270
         else:
             beta = atan(xVect/ zVect) * 180 / pi
+            
         if xVect **2 + zVect**2 == 0:
             if yVect > 0:
                 miu = 90
@@ -105,6 +106,7 @@ class Point3D:
                 miu = 270
         else:
             miu = atan (yVect / sqrt(xVect **2 + zVect**2)) * 180 / pi
+            
         step1 = self.translation(0 - point1[0], 0 - point1[1], 0 - point1[2])
         step2 = step1.rotationY(-beta)
         step3 = step2.rotationX(miu)
@@ -113,7 +115,87 @@ class Point3D:
         step6 = step5.rotationY(beta)
         result = step6.translation(point1[0] - 0, point1[1] - 0, point1[2] - 0)
 
-        return result
+        return result"""
+    
+    """ UNTUK YG ARBITARY, COBA INI GES """
+    def rotateArbitraryAxis(self, point1, point2, angle):
+        xVect = point2[0] - point1[0]
+        yVect = point2[1] - point1[1]
+        zVect = point2[2] - point1[2]
+        beta, miu = 0,0
+        
+        if zVect == 0:
+            if xVect > 0: 
+                beta = 90
+            else:
+                beta = 270
+        else:
+            beta = atan(xVect/ zVect) * 180 / pi
+            
+        if xVect **2 + zVect**2 == 0:
+            if yVect > 0:
+                miu = 90
+            else:
+                miu = 270
+        else:
+            miu = atan(yVect / math.sqrt(xVect **2 + zVect**2)) * 180 / pi
+            
+        x = 0 - point1[0] 
+        y = 0 - point1[1] 
+        z = 0 - point1[2]
+        
+        t1 = np.array([[1,0,0,x],
+                      [0,1,0,y],
+                      [0,0,1,z],
+                      [0,0,0,1]])
+        a = np.sin(-beta)
+        b = np.cos(-beta)
+        
+        rotY1 = np.array([[b,0,a,0],
+                      [0,1,0,0],
+                      [-a,0,b,0],
+                      [0,0,0,1]])
+        a = np.sin(miu)
+        b = np.cos(miu)
+        
+        rotX1 = np.array([[1,0,0,0],
+                      [0,b,-a,0],
+                      [0,a,b,0], 
+                      [0,0,0,1]])
+        a = np.sin(angle)
+        b = np.cos(angle)
+        
+        rotZ = np.array([[b,-a,0,0],
+                      [a,b,0,0],
+                      [0,0,1,0],
+                      [0,0,0,1]])
+        a = np.sin(-miu)
+        b = np.cos(-miu)
+        
+        rotX2 = np.array([[1,0,0,0],
+                      [0,b,-a,0],
+                      [0,a,b,0], 
+                      [0,0,0,1]])
+        a = np.sin(beta)
+        b = np.cos(beta)
+        
+        rotY2 = np.array([[b,0,a,0],
+                      [0,1,0,0],
+                      [-a,0,b,0],
+                      [0,0,0,1]])
+        x = point1[0] - 0
+        y = point1[1] - 0
+        z = point1[2] - 0
+        
+        t2 = np.array([[1,0,0,x],
+                      [0,1,0,y],
+                      [0,0,1,z],
+                      [0,0,0,1]])
+
+        temp = np.dot(t2,np.dot(rotY2,np.dot(rotX2,np.dot(rotZ,np.dot(rotX1, np.dot(rotY1,np.dot(t1,[self.x,self.y,self.z,1])))))))
+
+        return Point3D(temp[0],temp[1],temp[2])
+    """ end of cobain ini """
     
     def project(self, width, height, fov, viewer_distance):
         factor = fov / (viewer_distance + self.z)
@@ -131,8 +213,8 @@ def question():
         1. Translation
         2. Scaling
         3. Shearing
-        4. Rotation terhadap sumbu x, y, atau z
-        5. Rotation terhadap sumbu bebas (arbirary)
+        4. Rotasi terhadap sumbu x, y, atau z
+        5. Rotasi terhadap sumbu bebas (arbirary)
         Hanya pilih angka 0 sampai 5!
         Pilihan: """))
 
@@ -180,14 +262,14 @@ def question():
             zShear = float(input("Berapa faktor Shear z yang diinginkan?\nFaktor z: "))
             values = [xShear, 0, zShear]
 
-    #Operasi 4 rotation
+    #Operasi 4 rotasi
     elif operation == 4:
         xRot = float(input("Rotasi terhadap sumbu X dengan sumbu putar sebesar? (satuan degrees)\n"))
         yRot = float(input("Rotasi terhadap sumbu Y dengan sumbu putar sebesar? (satuan degrees)\n"))
         zRot = float(input("Rotasi terhadap sumbu Z dengan sumbu putar sebesar? (satuan degrees)\n"))
         values = [xRot, yRot, zRot] 
    
-    #Operasi 5 rotation arbitrary axis
+    #Operasi 5 rotasi terhadap sumbu bebas
     elif operation == 5:
         x1, y1,z1 = input("Masukkan titik pertama dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
         x2, y2,z2 = input("Masukkan titik kedua dari sumbu arbitrary (Format: x y z, Contoh: jika titik P(1,2,3) maka dituliskan menjadi '1 2 3' tanpa tanda petik\nTitik: ").split()
@@ -235,13 +317,13 @@ def main(operation, values, points):
         for i in range(len(points)):
             operatedPoints.append(points[i].shearing(xShear, yShear, zShear))
             
-    #rotation sumbu xyz
+    #rotasi sumbu xyz
     elif operation == 4:
         angleX, angleY, angleZ = values[0], values[1], values[2]
         for i in range(len(points)):
             operatedPoints.append(points[i].rotationX(angleX).rotationY(angleY).rotationZ(angleZ))
 
-    #rotation arbitrary axis
+    #rotasi sumbu bebas (arbitary axis)
     elif operation == 5:
         point1 = [values[0][0], values[0][1], values[0][2]]
         point2 = [values[1][0], values[1][1], values[1][2]]
