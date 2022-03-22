@@ -2,10 +2,11 @@
 # 1. Annisa Raihana Cahya Putri   (20/460540/TK/51129)
 # 2. Auletta Khansa Pradiviasari  (20/456359/TK/50489)
 # 3. Hervi Nur Rahmandien         (20/463601/TK/51593)
-# 4. Rahmiyatul Hasanah YE 
+# 4. Rahmiyatul Hasanah YE        (20/460561/TK/51150)
 # 5. Siti Malatania               (20/456380/TK/50510)
 
 import numpy as np
+import math
 import sys
 from graphics import *
 from math import *
@@ -22,10 +23,10 @@ class Point3D:
         result = np.dot(tr, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
-    def scaling(self, Sc):
-        sc = np.array([[Sc, 0, 0, 0],
-                       [0, Sc, 0, 0],
-                       [0, 0, Sc, 0],
+    def scaling(self, Sx, Sy, Sz):
+        sc = np.array([[Sx, 0, 0, 0],
+                       [0, Sy, 0, 0],
+                       [0, 0, Sz, 0],
                        [0, 0, 0, 1]])
         result = np.dot(sc, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
@@ -52,52 +53,40 @@ class Point3D:
         result = np.dot(sh, [self.x, self.y, self.z, 1])
         return Point3D(result[0], result[1], result[2])
 
-    def rotateX(self, angle):
-        """ Merotasikan titik terhadap sumbu X sesuai sudut yang diinginkan (degrees) """
+    def rotationX(self, angle):
         rad = angle * pi / 180
         cosa = cos(rad)
         sina = sin(rad)
-        matrix = np.array(
-            [[1,0,0,0], 
-            [0, cosa, -sina, 0], 
-            [0,sina, cosa, 0], 
-            [0,0,0,1]])
-        vector = np.array([self.x, self.y, self.z,1])
-        result = matrix.dot(vector)
+        rtX = np.array([[1, 0, 0, 0], 
+                        [0, cosa, -sina, 0], 
+                        [0, sina, cosa, 0], 
+                        [0, 0, 0, 1]])
+        result = np.dot(rtX, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
 
-    def rotateY(self, angle):
-        """ Merotasikan titik terhadap sumbu Y sesuai sudut yang diinginkan (degrees) """
+    def rotationY(self, angle):
         rad = angle * pi / 180
         cosa = cos(rad)
         sina = sin(rad)
-        matrix = np.array([
-            [cosa,0,sina,0], 
-            [0, 1, 0, 0], 
-            [-sina,0, cosa, 0], 
-            [0,0,0,1]
-            ])
-        vector = np.array([self.x, self.y, self.z,1])
-        result = matrix.dot(vector)
+        rtY = np.array([[cosa, 0, sina, 0], 
+                        [0, 1, 0, 0], 
+                        [-sina, 0, cosa, 0], 
+                        [0, 0, 0, 1]])
+        result = np.dot(rtY, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
 
-    def rotateZ(self, angle):
-        """ Merotasikan titik terhadap sumbu Z sesuai sudut yang diinginkan (degrees) """
+    def rotationZ(self, angle):
         rad = angle * pi / 180
         cosa = cos(rad)
         sina = sin(rad)
-        matrix = np.array([
-            [cosa, -sina ,0,0], 
-            [sina, cosa , 0, 0], 
-            [0 ,0, 1, 0], 
-            [0,0,0,1]
-            ])
-        vector = np.array([self.x, self.y, self.z,1])
-        result = matrix.dot(vector)
+        rtZ = np.array([[cosa, -sina, 0, 0], 
+                        [sina, cosa, 0, 0], 
+                        [0, 0, 1, 0], 
+                        [0, 0, 0, 1]])
+        result = np.dot(rtZ, [self.x, self.y, self.z,1])
         return Point3D(result[0], result[1], result[2])
 
     def rotateArbitraryAxis(self, point1, point2, angle):
-        #Determining arbitrary axis
         xVect = point2[0] - point1[0]
         yVect = point2[1] - point1[1]
         zVect = point2[2] - point1[2]
@@ -126,7 +115,6 @@ class Point3D:
 
         return result
     
-    #Proyeksi ke bidang 2 dimensi
     def project(self, width, height, fov, viewer_distance):
         factor = fov / (viewer_distance + self.z)
         x = self.x * factor + width / 2
@@ -249,7 +237,7 @@ def main(operation, values, points):
     elif operation == 4:
         angleX, angleY, angleZ = values[0], values[1], values[2]
         for i in range(len(points)):
-            operatedPoints.append(points[i].rotateX(angleX).rotateY(angleY).rotateZ(angleZ))
+            operatedPoints.append(points[i].rotationX(angleX).rotationY(angleY).rotationZ(angleZ))
 
     #rotation arbitrary axis
     elif operation == 5:
